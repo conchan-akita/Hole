@@ -1,11 +1,18 @@
 package jp.akita.conchan.hole;
 
+import android.content.Context;
+import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
+import android.graphics.Paint;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.animation.Animation;
 import android.view.animation.TranslateAnimation;
@@ -18,7 +25,9 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     private RelativeLayout relativeLayout;
     //private ImageView[] baumImage = new ImageView[10];
     private ImageView baumImage;
+    private ImageView holeImage;
     private int loopCount=0;
+    DrawView drawView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,8 +44,22 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             Anim(i);
 
         }*/
+
+        drawView = new DrawView(this);
+
         baumImage = new ImageView(this);
         baumImage.setImageResource(R.drawable.baum);
+        //baumImage.setBackgroundResource(R.drawable.baum);
+        baumImage.setClickable(true);
+        baumImage.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                    Log.v("151007", "baum clicked!");
+                }
+                return false;
+            }
+        });
         relativeLayout.addView(baumImage);
         Anim(Rand());
 
@@ -47,6 +70,28 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         baumAnimation.start();*/
 
 
+
+    }
+
+
+
+
+    @Override
+    public boolean onTouchEvent(MotionEvent event) {
+        //return super.onTouchEvent(event);
+        if(event.getAction() == MotionEvent.ACTION_DOWN){
+            // タッチ押下
+            double x = event.getX();
+            double y = event.getY();
+            Log.v("151007", "Touch! x = " + x + " , y = " + y);
+
+            // hole
+            //holeImage=new ImageView(this);
+
+            //baumImage.setImageResource(R.drawable.hole);
+            drawView.invalidate();
+        }
+        return false;
     }
 
     @Override
@@ -56,7 +101,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     @Override
     public void onAnimationEnd(Animation animation) {
-        Log.v("151007","onAnimationEnd");
+        Log.v("151007", "onAnimationEnd");
         if(loopCount<10)
             Anim(Rand());
     }
@@ -97,7 +142,31 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
 
 
+    private class DrawView extends View{
 
+        Resources resources;
+        Bitmap holeImage;
+        Paint paint;
+
+        // コンストラクタ
+        public DrawView(Context context) {
+            super(context);
+
+            setWillNotDraw(false);
+
+            resources=this.getContext().getResources();
+            holeImage= BitmapFactory.decodeResource(resources, R.drawable.hole);
+            //this.invalidate();
+        }
+
+        @Override
+        protected void onDraw(Canvas canvas) {
+            super.onDraw(canvas);
+            paint=new Paint();
+            canvas.drawBitmap(holeImage,100,100,paint);
+            Log.v("151007","onDraw End.");
+        }
+    }
 
 
 
@@ -126,3 +195,4 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     }
 
 }
+
