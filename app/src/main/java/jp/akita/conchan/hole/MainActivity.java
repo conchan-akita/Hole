@@ -1,5 +1,7 @@
 package jp.akita.conchan.hole;
 
+import android.animation.Animator;
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -14,7 +16,9 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.ViewGroup;
 import android.view.animation.Animation;
+import android.view.animation.LinearInterpolator;
 import android.view.animation.TranslateAnimation;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -28,6 +32,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     private ImageView holeImage;
     private int loopCount=0;
     DrawView drawView;
+    private final int MP = ViewGroup.LayoutParams.MATCH_PARENT;
+    private final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,14 +60,25 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         baumImage.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                if(event.getAction() == MotionEvent.ACTION_DOWN) {
+                if (event.getAction() == MotionEvent.ACTION_DOWN) {
                     Log.v("151007", "baum clicked!");
                 }
                 return false;
             }
         });
-        relativeLayout.addView(baumImage);
-        Anim(Rand());
+
+        // 画像追加位置
+        // http://developer.android.com/reference/android/widget/RelativeLayout.html
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(WC,WC);
+        params.addRule(RelativeLayout.CENTER_VERTICAL);
+        params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+
+        relativeLayout.addView(baumImage,params);
+        //Anim(Rand());
+        //for(int i=0; i<10; i++)
+        // layout(left, top, right, bottom);
+        //baumImage.layout(100,250,100+baumImage.getWidth(),250+baumImage.getHeight());
+        animateTranslationX(baumImage);
 
         /*ImageView baumImageSolo = new ImageView(this);
         baumImageSolo.setImageResource(R.drawable.baum);
@@ -74,7 +91,50 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     }
 
 
+    private void animateTranslationX( ImageView target) {
 
+        int width_targetImage=target.getWidth();
+        //int rand_duration = duration;
+        // translationXプロパティを変化させます
+        final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(target, "translationX", -700f, 700f);
+        //objectAnimator.ofFloat(target,)
+
+        // 3秒かけて実行させます
+        objectAnimator.setDuration(Rand());
+
+        //repeat
+        objectAnimator.setRepeatCount(10-1);
+
+        // animation speed
+        objectAnimator.setInterpolator(new LinearInterpolator());
+
+        // listener
+        objectAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //Log.v("151007", "animation END.");
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+                objectAnimator.setDuration(Rand());
+            }
+        });
+
+        // アニメーションを開始します
+        objectAnimator.start();
+    }
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
