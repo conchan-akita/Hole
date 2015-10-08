@@ -7,6 +7,7 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.AnimationDrawable;
 import android.support.v7.app.AppCompatActivity;
@@ -32,6 +33,9 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
     private ImageView holeImage;
     private int loopCount=0;
     DrawView drawView;
+    private Bitmap baumBitmap;
+    private Canvas baumBitmapCanvas;
+    private Paint baumPaint;
     private final int MP = ViewGroup.LayoutParams.MATCH_PARENT;
     private final int WC = ViewGroup.LayoutParams.WRAP_CONTENT;
 
@@ -52,7 +56,9 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         }*/
 
         drawView = new DrawView(this);
+        //setContentView(drawView);
 
+        // baum の imageView ver.
         baumImage = new ImageView(this);
         baumImage.setImageResource(R.drawable.baum);
         //baumImage.setBackgroundResource(R.drawable.baum);
@@ -61,19 +67,32 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             @Override
             public boolean onTouch(View v, MotionEvent event) {
                 if (event.getAction() == MotionEvent.ACTION_DOWN) {
-                    Log.v("151007", "baum clicked!");
+                    float x = event.getX();
+                    float y = event.getY();
+                    //drawView.mDraw();
+                    Log.v("151007", "baum clicked! x = "+x+" , y = "+y);
                 }
                 return false;
             }
         });
 
+        // baum の Btimsp ver.
+        /*
+        baumBitmap = BitmapFactory.decodeResource(getResources(),R.drawable.baum);
+        baumBitmapCanvas = new Canvas(baumBitmap);
+        baumPaint.setColor(Color.GREEN);
+        baumBitmapCanvas.drawCircle(100,100,40,baumPaint);
+        */
+
         // 画像追加位置
         // http://developer.android.com/reference/android/widget/RelativeLayout.html
+        // http://d.hatena.ne.jp/gm_ma/20120222/1329927858
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(WC,WC);
         params.addRule(RelativeLayout.CENTER_VERTICAL);
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
-        relativeLayout.addView(baumImage,params);
+        relativeLayout.addView(baumImage, params);
+        relativeLayout.addView(drawView);
         //Anim(Rand());
         //for(int i=0; i<10; i++)
         // layout(left, top, right, bottom);
@@ -90,7 +109,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
     }
 
-
+    // http://qiita.com/glayash/items/1822a852ebaa7d26a53e
+    //http://techblog.yahoo.co.jp/programming/androidiphone/
     private void animateTranslationX( ImageView target) {
 
         int width_targetImage=target.getWidth();
@@ -136,6 +156,54 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
         objectAnimator.start();
     }
 
+    private void animateTranslationX( Canvas target) {
+
+        //int width_targetImage=target.getWidth();
+        //int rand_duration = duration;
+        // translationXプロパティを変化させます
+        final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(target, "translationX", -700f, 700f);
+        //objectAnimator.ofFloat(target,)
+
+        // 3秒かけて実行させます
+        objectAnimator.setDuration(Rand());
+
+        //repeat
+        objectAnimator.setRepeatCount(10-1);
+
+        // animation speed
+        objectAnimator.setInterpolator(new LinearInterpolator());
+
+        // listener
+        objectAnimator.addListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                //Log.v("151007", "animation END.");
+
+            }
+
+            @Override
+            public void onAnimationCancel(Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(Animator animation) {
+                objectAnimator.setDuration(Rand());
+            }
+        });
+
+        // アニメーションを開始します
+        objectAnimator.start();
+    }
+
+
+    // http://techbooster.org/android/application/715/
+    // http://www.hp3200.com/android-app-development/b-touch.html
     @Override
     public boolean onTouchEvent(MotionEvent event) {
         //return super.onTouchEvent(event);
@@ -149,7 +217,7 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             //holeImage=new ImageView(this);
 
             //baumImage.setImageResource(R.drawable.hole);
-            drawView.invalidate();
+            //drawView.invalidate();
         }
         return false;
     }
@@ -194,18 +262,13 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
 
 
 
-
-
-
-
-
-
-
-
     private class DrawView extends View{
 
         Resources resources;
         Bitmap holeImage;
+        Bitmap images;
+        Canvas bitmapCanvas;
+        Paint imagesPaint = new Paint();
         Paint paint;
 
         // コンストラクタ
@@ -217,6 +280,8 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             resources=this.getContext().getResources();
             holeImage= BitmapFactory.decodeResource(resources, R.drawable.hole);
             //this.invalidate();
+
+
         }
 
         @Override
@@ -224,8 +289,47 @@ public class MainActivity extends AppCompatActivity implements Animation.Animati
             super.onDraw(canvas);
             paint=new Paint();
             canvas.drawBitmap(holeImage,100,100,paint);
+
+            // test 151008
+            images = BitmapFactory.decodeResource(resources,R.drawable.baum);
+            if(!images.isMutable()){
+                //images = images.copy(Bitmap.Config.ARGB_8888,true);
+            }
+
+            //bitmapCanvas = new Canvas(images);
+            imagesPaint.setColor(Color.GREEN);
+            //bitmapCanvas.drawCircle(50,50,40,imagesPaint);
+            canvas.drawCircle(50, 50, 40, imagesPaint);
+            //bitmapCanvas.drawBitmap(images,10,120,null);
+            canvas.drawBitmap(images,10,120,null);
+
             Log.v("151007","onDraw End.");
         }
+
+        public void mDraw(){
+            this.invalidate();
+        }
+
+        // http://stackoverflow.com/questions/18826808/how-to-make-a-bitmap-using-canvas-clickable
+        /*
+        @Override
+        public boolean onTouchEvent(MotionEvent event) {
+            //return super.onTouchEvent(event);
+            float x = event.getX();
+            float y = event.getY();
+            switch(event.getAction())
+            {
+                case MotionEvent.ACTION_DOWN:
+                    //Check if the x and y position of the touch is inside the bitmap
+                    if( x > bitmapXPosition && x < bitmapXPosition + bitmapWidth && y > bitmapYPosition && y < bitmapYPosition + bitmapHeight )
+                    {
+                        //Bitmap touched
+                    }
+                    return true;
+            }
+            return false;
+        }
+        */
     }
 
 
