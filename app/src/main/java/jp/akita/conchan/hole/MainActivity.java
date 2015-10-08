@@ -223,7 +223,7 @@ public class MainActivity extends AppCompatActivity{
             baumBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.baum,options);
             baumBitmapCanvas = new Canvas(baumBitmap);
             paint.setColor(Color.GREEN);
-            baumBitmapCanvas.drawCircle(100, 100, 50, paint);
+            baumBitmapCanvas.drawCircle(touchedImageX, touchedImageY, 50, paint);
             baumBitmapCanvas.drawBitmap(baumBitmap, 0, 0, null);
 
             //baumWithHole = new ImageView(getContext());
