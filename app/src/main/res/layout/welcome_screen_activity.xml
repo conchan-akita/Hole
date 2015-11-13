@@ -3,6 +3,7 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1"
+    android:background="@drawable/back750720"
     >
 
     <Space
@@ -31,14 +32,17 @@
         android:layout_height="wrap_content"
         android:id="@+id/imageView"
         android:layout_gravity="center_horizontal"
-        android:src="@drawable/baum" />
+        android:src="@drawable/baum2"
+        />
 
-    <ImageView
+    <jp.akita.conchan.hole.RingImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/imageView3"
         android:layout_gravity="center_horizontal"
-        android:layout_weight="0.1" />
+        android:layout_weight="0.1"
+        android:src="@drawable/baum_with_hole"
+        />
 
     <Button
         android:layout_width="wrap_content"

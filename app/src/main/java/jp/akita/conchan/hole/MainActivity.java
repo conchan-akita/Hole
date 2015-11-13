@@ -10,6 +10,7 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.drawable.AnimationDrawable;
+import android.os.Handler;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -31,11 +32,12 @@ public class MainActivity extends AppCompatActivity{
 
     private RelativeLayout relativeLayout;
     //private ImageView[] baumImage = new ImageView[10];
-    private ImageView baumImage;
+    private RingImageView baumImage;
     private ImageView baumImage_noHole;
     private ImageView holeImage;
     private TextView pointValueText;
-    private int nowPoint=1000;
+    private TextView countdownText;
+    private int nowPoint=0;
     private boolean clickedBaumFlg=false;
     private boolean doubleHole=false;
     DrawView drawView;
@@ -48,47 +50,52 @@ public class MainActivity extends AppCompatActivity{
     @Override
     public void onWindowFocusChanged(boolean hasFocus) {
 
-        final float baumImageCenterX = baumImage.getWidth()/2;
-        final float baumImageCenterY = baumImage.getHeight()/2;
-        baumImage.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View v, MotionEvent event) {
-                if (event.getAction() == MotionEvent.ACTION_DOWN /*&& !doubleHole*/) {
-                    float x = event.getX();
-                    float y = event.getY();
-                    //drawView.mDraw();
+        if(baumImage!=null) {
 
-                    // 穴あきbitmap canvas用意
-                    // x,yを渡す
-                    drawView.setXY(x,y);
+            final float baumImageCenterX = baumImage.getWidth() / 2;
+            final float baumImageCenterY = baumImage.getHeight() / 2;
+            baumImage.setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    if (event.getAction() == MotionEvent.ACTION_DOWN && !doubleHole) {
+                        float x = event.getX();
+                        float y = event.getY();
+                        //drawView.mDraw();
 
-
-                    // ImageView変更
-                    // test code
-                    // baumImage.setImageResource(R.drawable.hole);
-                    // http://falco.sakura.ne.jp/tech/2013/09/android-imageview-%E3%82%88%E3%82%8A-bitmap-%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B%E3%81%AB%E3%81%AF%EF%BC%9F/
-
-                    //baumImage.
-                    baumImage.setImageBitmap(drawView.makeHole());
+                        // 穴あきbitmap canvas用意
+                        // x,yを渡す
+                        drawView.setXY(x, y);
 
 
-                    // 得点の計算
-                    int point = (int) Math.sqrt(Math.pow((baumImageCenterX-x), 2) + Math.pow((baumImageCenterY-y),2));
-                    nowPoint-=point;
+                        // ImageView変更
+                        // test code
+                        // baumImage.setImageResource(R.drawable.hole);
+                        // http://falco.sakura.ne.jp/tech/2013/09/android-imageview-%E3%82%88%E3%82%8A-bitmap-%E3%82%92%E5%8F%96%E5%BE%97%E3%81%99%E3%82%8B%E3%81%AB%E3%81%AF%EF%BC%9F/
 
-                    //Toast.makeText(getApplication(),"point = "+point,Toast.LENGTH_SHORT).show();
-                    pointValueText.setText(Integer.toString(nowPoint));
+                        //baumImage.
+                        baumImage.setImageBitmap(drawView.makeHole());
 
 
-                    clickedBaumFlg=true;
-                    // 2回目のタップでは穴あかないように
-                    doubleHole=true;
+                        // 得点の計算
+                        // maxDistance = 最も離れた場所に穴を開けた場合
+                        int maxDistance = (int) Math.sqrt(Math.pow((baumImageCenterX - 0), 2) + Math.pow((baumImageCenterY - 0), 2));
+                        int point = maxDistance -  (int) Math.sqrt(Math.pow((baumImageCenterX - x), 2) + Math.pow((baumImageCenterY - y), 2));
+                        nowPoint += point;
 
-                    Log.v("151007", "baum clicked! x = "+x+" , y = "+y + " , baumX/2 = "+baumImageCenterX+" , baumY/2 = "+baumImageCenterY);
+                        //Toast.makeText(getApplication(),"point = "+point,Toast.LENGTH_SHORT).show();
+                        pointValueText.setText(Integer.toString(nowPoint));
+
+
+                        clickedBaumFlg = true;
+                        // 2回目のタップでは穴あかないように
+                        doubleHole = true;
+
+                        Log.v("151007", "baum clicked! x = " + x + " , y = " + y + " , baumX/2 = " + baumImageCenterX + " , baumY/2 = " + baumImageCenterY);
+                    }
+                    return false;
                 }
-                return false;
-            }
-        });
+            });
+        }
 
         super.onWindowFocusChanged(hasFocus);
     }
@@ -98,32 +105,29 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Toast.makeText(this,"nya-",Toast.LENGTH_SHORT).show();
+
         relativeLayout = (RelativeLayout)findViewById(R.id.relativeLayout);
         pointValueText = (TextView)findViewById(R.id.pointValueTextView);
 
-        /*for (int i=0;i<10;i++) {
-            baumImage[i] = new ImageView(this);
-            baumImage[i].setImageResource(R.drawable.baum);
-            relativeLayout.addView(baumImage[i]);
+        CountDownStart();
 
-            Anim(i);
-
-        }*/
-
-        drawView = new DrawView(this);
+        drawView = new DrawView(getApplicationContext());
         //setContentView(drawView);
 
         // baum の imageView ver.
-        baumImage = new ImageView(this);
-        baumImage.setImageResource(R.drawable.baum);
+        baumImage = new RingImageView(getApplicationContext());
+        // 透明可視デバッグ
+        //baumImage.setBackgroundColor(0xffff0000);
+        baumImage.setImageResource(R.drawable.baum3);
+        //http://developer.android.com/reference/android/widget/ImageView.html#attr_android:scaleType
+        //http://developer.android.com/reference/android/widget/ImageView.ScaleType.html
+        baumImage.setScaleType(ImageView.ScaleType.CENTER);
 
         //final float baumImageCenterX = baumImage.getWidth()/2;
         //final float baumImageCenterY = baumImage.getHeight()/2;
         baumImage_noHole = baumImage;
         baumImage.setClickable(true);
-
-
-
 
         // 画像追加位置
         // http://developer.android.com/reference/android/widget/RelativeLayout.html
@@ -133,11 +137,86 @@ public class MainActivity extends AppCompatActivity{
         params.addRule(RelativeLayout.CENTER_HORIZONTAL);
 
         relativeLayout.addView(baumImage, params);
+        // View.GONEにするとbaumImageCenterX , baumImageCenterYが0になる
+        baumImage.setVisibility(View.INVISIBLE);
+
         //relativeLayout.addView(drawView);
 
-        animateTranslationX(baumImage);
+        //animateTranslationX(baumImage);
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
 
+                baumImage.setVisibility(View.VISIBLE);
+                animateTranslationX(baumImage);
+            }
+        },6500);
 
+    }
+
+    private void CountDownStart(){
+        //countdownText = new TextView(this);
+        //RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(WC,WC);
+        //params.addRule(RelativeLayout.CENTER_VERTICAL);
+        //params.addRule(RelativeLayout.CENTER_HORIZONTAL);
+        //relativeLayout.addView(countdownText);
+        countdownText= (TextView)findViewById(R.id.countdownTextView);
+        countdownText.setText("流れてくる\nバウムクーヘンの\n中心をタッチ！");
+        // sleep中、UIスレッドはそのまま待たされるっぽい
+        /*try {
+            Thread.sleep(2000);
+            wait(2000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }*/
+        // http://stackoverflow.com/questions/22803476/animators-may-only-be-run-on-looper-threads-on-sherlock-action-bar
+        final Handler mHandler = new Handler();
+
+        new Thread(new Runnable() {
+            public void run() {
+                // スリープ処理をmHandler.postの外でやってみる
+                try {
+                    Thread.sleep(2500);
+                }catch(InterruptedException e){
+                }
+                mHandler.post(new Runnable() {
+                    public void run() {
+                        //Toast.makeText(getApplication(),"thread test",Toast.LENGTH_SHORT).show();
+                        countdownText.setText("3");
+                    }
+                });
+                try {
+                    Thread.sleep(1000);
+                }catch(InterruptedException e){
+                }
+                mHandler.post(new Runnable() {
+                    public void run() {
+                        countdownText.setText("2");
+                    }
+                });
+                try {
+                    Thread.sleep(1000);
+                }catch(InterruptedException e){
+                }
+                mHandler.post(new Runnable() {
+                    public void run() {
+                        countdownText.setText("1");
+                    }
+                });
+                try {
+                    Thread.sleep(1000);
+                }catch(InterruptedException e){
+                }
+                mHandler.post(new Runnable() {
+                    public void run() {
+                        countdownText.setText("");
+                        //relativeLayout.removeView(countdownText);
+                    }
+                });
+            }
+        }).start();
+        //relativeLayout.removeView(countdownText);
+        Toast.makeText(this,"countDownStart() END.",Toast.LENGTH_SHORT).show();
     }
 
     // http://qiita.com/glayash/items/1822a852ebaa7d26a53e
@@ -171,7 +250,8 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onAnimationEnd(Animator animation) {
                 //Log.v("151007", "animation END.");
-
+                // Integer.toString(nowPoint));
+                countdownText.setText("お疲れ様！");
 
             }
 
@@ -182,10 +262,12 @@ public class MainActivity extends AppCompatActivity{
 
             @Override
             public void onAnimationRepeat(Animator animation) {
+                // 1つのバウムを何度もタップできないようにする
+                doubleHole=false;
                 objectAnimator.setDuration(Rand());
                 if (clickedBaumFlg) {
                     // 次に流れるバウムは穴の開いていない画像.
-                    baumImage.setImageResource(R.drawable.baum);
+                    baumImage.setImageResource(R.drawable.baum3);
                     clickedBaumFlg=false;
                 }
             }
@@ -231,7 +313,7 @@ public class MainActivity extends AppCompatActivity{
         Bitmap baumBitmap;
         Canvas baumBitmapCanvas;
         Paint paint = new Paint();
-        //ImageView baumWithHole;
+        //ImageView baum_with_hole;
 
         public DrawView(Context context) {
             super(context);
@@ -248,15 +330,15 @@ public class MainActivity extends AppCompatActivity{
             // API Level 11(3.0) 以上しか使えない
             // http://dev.classmethod.jp/smartphone/android/android-immutable-bitmap-mutable/
             options.inMutable = true;
-            baumBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.baum,options);
+            baumBitmap = BitmapFactory.decodeResource(context.getResources(), R.drawable.baum3,options);
             baumBitmapCanvas = new Canvas(baumBitmap);
-            paint.setColor(Color.GREEN);
+            paint.setColor(Color.rgb(238,238,238));
             baumBitmapCanvas.drawCircle(touchedImageX, touchedImageY, 50, paint);
             baumBitmapCanvas.drawBitmap(baumBitmap, 0, 0, null);
 
-            //baumWithHole = new ImageView(getContext());
-            //baumWithHole.setImageBitmap(baumBitmap);
-            //return baumWithHole;
+            //baum_with_hole = new ImageView(getContext());
+            //baum_with_hole.setImageBitmap(baumBitmap);
+            //return baum_with_hole;
             return baumBitmap;
         }
 
