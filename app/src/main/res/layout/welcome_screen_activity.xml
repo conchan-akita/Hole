@@ -3,7 +3,10 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:weightSum="1"
+<<<<<<< HEAD
     android:background="@drawable/back750720"
+=======
+>>>>>>> b1a4254a390f82af96662ec69f63c3b1878b1c07
     >
 
     <Space
@@ -20,6 +23,7 @@
         android:id="@+id/titleTextView"
         android:layout_gravity="center_horizontal" />
 
+<<<<<<< HEAD
     <ImageView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -45,6 +49,8 @@
         android:src="@drawable/baum_with_hole"
         />
 
+=======
+>>>>>>> b1a4254a390f82af96662ec69f63c3b1878b1c07
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"

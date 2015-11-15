@@ -4,8 +4,12 @@
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
     android:paddingBottom="@dimen/activity_vertical_margin" tools:context=".MainActivity"
+<<<<<<< HEAD
     android:id="@+id/relativeLayout"
     android:background="@drawable/back750720_baumoving">
+=======
+    android:id="@+id/relativeLayout">
+>>>>>>> b1a4254a390f82af96662ec69f63c3b1878b1c07
 
     <!--TextView android:text="@string/hello_world" android:layout_width="wrap_content"
         android:layout_height="wrap_content" /-->
@@ -13,6 +17,7 @@
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+<<<<<<< HEAD
         android:text="Point : "
         android:id="@+id/pointTextView"
         android:layout_alignParentTop="true"
@@ -47,5 +52,11 @@
         android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
         android:textSize="30dp" />
+=======
+        android:text="New Text"
+        android:id="@+id/textView"
+        android:layout_centerVertical="true"
+        android:layout_centerHorizontal="true" />
+>>>>>>> b1a4254a390f82af96662ec69f63c3b1878b1c07
 
 </RelativeLayout>
