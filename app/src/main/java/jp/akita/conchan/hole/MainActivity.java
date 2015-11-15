@@ -105,8 +105,6 @@ public class MainActivity extends AppCompatActivity{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Toast.makeText(this,"nya-",Toast.LENGTH_SHORT).show();
-
         relativeLayout = (RelativeLayout)findViewById(R.id.relativeLayout);
         pointValueText = (TextView)findViewById(R.id.pointValueTextView);
 
@@ -226,11 +224,13 @@ public class MainActivity extends AppCompatActivity{
         int width_targetImage=target.getWidth();
         //int rand_duration = duration;
         // translationXプロパティを変化させます
-        final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(target, "translationX", -700f, 700f);
+        final ObjectAnimator objectAnimator = ObjectAnimator.ofFloat(target, "translationX", -100f, 70f);
         //objectAnimator.ofFloat(target,)
 
         // 3秒かけて実行させます
-        objectAnimator.setDuration(Rand());
+        int firstSpeed=2000;
+        Log.v("speed","firstSpeed = "+firstSpeed);
+        objectAnimator.setDuration(firstSpeed);
 
         //objectAnimator.setCurrentPlayTime(Rand());
 
@@ -252,7 +252,6 @@ public class MainActivity extends AppCompatActivity{
                 //Log.v("151007", "animation END.");
                 // Integer.toString(nowPoint));
                 countdownText.setText("お疲れ様！");
-
             }
 
             @Override
@@ -263,12 +262,24 @@ public class MainActivity extends AppCompatActivity{
             @Override
             public void onAnimationRepeat(Animator animation) {
                 // 1つのバウムを何度もタップできないようにする
-                doubleHole=false;
-                objectAnimator.setDuration(Rand());
+                doubleHole = false;
+                /*Object lock = new Object();
+                synchronized (lock) {
+                    try {
+                        lock.wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }*/
+                int nextSpeed = 1101;
+                objectAnimator.setDuration(nextSpeed);
+                Log.v("animSpeed", "speed = " + nextSpeed + " , getDuration = "+objectAnimator.getDuration());
+
+
                 if (clickedBaumFlg) {
                     // 次に流れるバウムは穴の開いていない画像.
                     baumImage.setImageResource(R.drawable.baum3);
-                    clickedBaumFlg=false;
+                    clickedBaumFlg = false;
                 }
             }
         });
